@@ -1,0 +1,23 @@
+name: msal_guard
+description: Guard widget for the Msal Flutter library
+version: 0.0.1-alpha.1
+author: Muljin Pte. Ltd.
+homepage: https://github.com/muljin/msal-guard
+repository: https://github.com/muljin/msal-guard
+publish_to: none
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  msal_flutter:
+    path: ../../46-msal-flutter
+  provider: ^5.0.0
+  rxdart: ^0.26.0
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
