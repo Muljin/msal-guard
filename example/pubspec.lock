@@ -98,9 +98,9 @@ packages:
   msal_flutter:
     dependency: transitive
     description:
-      path: "../../46-msal-flutter"
-      relative: true
-    source: path
+      name: msal_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "2.0.0-alpha.1"
   msal_guard:
     dependency: "direct main"
