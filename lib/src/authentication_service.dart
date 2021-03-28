@@ -50,7 +50,11 @@ class AuthenticationService {
         iosRedirectUri: this.iosRedirectUri);
 
     //store the default scopes for the app
-    await acquireTokenSilently();
+    try {
+      await acquireTokenSilently();
+    } on MsalNoAccountException {
+      _updateStatus(AuthenticationStatus.unauthenticated);
+    }
   }
 
   Future<String> acquireToken({List<String>? scopes}) async {

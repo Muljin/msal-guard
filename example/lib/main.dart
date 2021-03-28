@@ -1,3 +1,4 @@
+import 'package:example/loading.dart';
 import 'package:example/login.dart';
 import 'package:example/private.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return MsalGuard(
       publicWidget: LoginWidget(),
       guardedWidget: PrivateWidget(),
-      loadingWidget: Text('Loading'),
+      loadingWidget: LoadingWidget(),
       clientId: _clientId,
       authority: _authority,
       redirectUri: _redirectUri,

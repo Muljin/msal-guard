@@ -1,14 +1,17 @@
 # msal_guard_widget
 
-A new Flutter package project.
+MSAL Guard is a highly opinionated implementation of a MSAL protected web application built for use on our client projects.
+MSAL Guard consists of splitting applications into public and private sections, each acting as completely seperate mini-applications with no shared routing or services apart from authentication based ones.
+
+MSAL Guard is a companion widget for [MSAL Flutter](https://github.com/Muljin/msal-flutter) and cannot be used without it. Application must be configured to MSAL Flutter, the details of which can be found in its repository.
+
+MSAL Guard is designed only for use against a single audience, using a single client. Other usage is not activity tested nor encouraged.
 
 ## Getting Started
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+To get started, goto the [MSAL Flutter](https://github.com/Muljin/msal-flutter) repository and follow the configuration guade.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Once configured, create a new MsalGuard widget providing your clientid, default scopes used for validating a users authentication status.
+Additionally, provide widgets representing the apps authenticated state, unauthenticated state and in progress state.
+
+Additional support and documentation coming soon.
