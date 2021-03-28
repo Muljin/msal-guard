@@ -14,7 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   msal_flutter:
-    path: ../../46-msal-flutter
+    path: ../46-msal-flutter
   provider: ^5.0.0
   rxdart: ^0.26.0
 dev_dependencies:
