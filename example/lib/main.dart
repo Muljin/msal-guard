@@ -1,3 +1,5 @@
+import 'package:example/login.dart';
+import 'package:example/private.dart';
 import 'package:flutter/material.dart';
 import 'package:msal_guard/msal_guard.dart';
 
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -40,8 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return MsalGuard(
-      publicWidget: Text('Public'),
-      guardedWidget: Text('Private'),
+      publicWidget: LoginWidget(),
+      guardedWidget: PrivateWidget(),
       loadingWidget: Text('Loading'),
       clientId: _clientId,
       authority: _authority,

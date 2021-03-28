@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:msal_guard/msal_guard.dart';
 import 'package:provider/provider.dart';
 
 import 'authentication_service.dart';
 import 'authentication_status.dart';
 
+/// Create a new MsalGuard widget
+/// @param scopes The default scopes to be used on the app against its main API endpoint. Default scopes used for login and checking auth status
 class MsalGuard extends StatefulWidget {
   const MsalGuard(
       {Key? key,
@@ -60,6 +63,7 @@ class _MsalGuardState extends State<MsalGuard> {
       this.iosRedirectUri}) {
     _authenticationService = AuthenticationService(
         clientId: this.clientId,
+        defaultScopes: scopes,
         authority: this.authority,
         redirectUri: this.redirectUri,
         iosRedirectUri: this.iosRedirectUri,
@@ -72,14 +76,19 @@ class _MsalGuardState extends State<MsalGuard> {
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       print("Initialising auth");
-      _authenticationService.init(scopes);
+      _authenticationService.init();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Provider<AuthenticationService>(
-        create: (_) => _authenticationService,
+    return MultiProvider(
+        providers: [
+          Provider<AuthenticationService>(
+              create: (_) => _authenticationService),
+          Provider<AuthenticatedHttp>(
+              create: (_) => AuthenticatedHttp(_authenticationService))
+        ],
         child: StreamBuilder(
           initialData: widget.loadingWidget,
           stream: _authenticationService.authenticationStatus,
@@ -87,7 +96,8 @@ class _MsalGuardState extends State<MsalGuard> {
             if (!snapshot.hasData) {
               return widget.loadingWidget;
             }
-            if (snapshot.data == AuthenticationStatus.unauthenticated) {
+            if (snapshot.data == AuthenticationStatus.unauthenticated ||
+                snapshot.data == AuthenticationStatus.failed) {
               return widget.publicWidget;
             } else if (snapshot.data == AuthenticationStatus.authenticated) {
               return widget.guardedWidget;

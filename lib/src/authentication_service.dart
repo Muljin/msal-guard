@@ -7,6 +7,7 @@ class AuthenticationService {
   /// Create a new authentication ser
   AuthenticationService(
       {required this.clientId,
+      required this.defaultScopes,
       this.authority,
       this.redirectUri,
       this.androidRedirectUri,
@@ -19,6 +20,7 @@ class AuthenticationService {
   final String? iosRedirectUri;
 
   PublicClientApplication? pca;
+  List<String> defaultScopes;
 
   // behavior subject
   final BehaviorSubject<AuthenticationStatus> _authenticationStatusSubject =
@@ -28,6 +30,7 @@ class AuthenticationService {
   Stream<AuthenticationStatus> get authenticationStatus =>
       _authenticationStatusSubject.stream;
 
+  /// Updates the authentication status
   void _updateStatus(AuthenticationStatus status) {
     var last = this._authenticationStatusSubject.value;
     if (status == last) {
@@ -36,29 +39,71 @@ class AuthenticationService {
     _authenticationStatusSubject.add(status);
   }
 
-  /// Initialisation function. Only to be called once on startup or first usage of auth service
-  Future init(List<String> scopes) async {
+  /// Initialisation function. Only to be called once on startup or first usage of auth service.
+  /// @param defaultScopes A set of scopes which act as the default scopes for the app against its primary backend
+  Future init() async {
     pca = await PublicClientApplication.createPublicClientApplication(
         this.clientId,
         authority: this.authority,
         redirectUri: this.redirectUri,
         androidRedirectUri: this.androidRedirectUri,
         iosRedirectUri: this.iosRedirectUri);
-    // try get token silently
+
+    //store the default scopes for the app
+    await acquireTokenSilently();
+  }
+
+  Future<String> acquireToken({List<String>? scopes}) async {
     try {
-      print("Getting token");
-      print(this.authority);
-      var res = await pca!.acquireToken(scopes);
-      print("got token");
-      print(res);
+      _pcaInitializedGuard();
+      var res = await pca!.acquireToken(scopes ?? defaultScopes);
+      _updateStatus(AuthenticationStatus.authenticated);
+      return res;
+    } catch (e) {
+      _updateStatus(AuthenticationStatus.unauthenticated);
+      throw e;
+    }
+  }
+
+  Future<String> acquireTokenSilently({List<String>? scopes}) async {
+    try {
+      _pcaInitializedGuard();
+      var res = await pca!.acquireTokenSilent(scopes ?? defaultScopes);
+      _updateStatus(AuthenticationStatus.authenticated);
+      return res;
+    } catch (e) {
+      _updateStatus(AuthenticationStatus.unauthenticated);
+      throw e;
+    }
+  }
+
+  Future login() async {
+    try {
+      _updateStatus(AuthenticationStatus.authenticating);
+      await pca!.acquireToken(defaultScopes);
       _updateStatus(AuthenticationStatus.authenticated);
     } catch (e) {
-      print("Caught exception");
+      _updateStatus(AuthenticationStatus.failed);
+    }
+  }
+
+  Future logout() async {
+    try {
+      await pca!.logout();
+    } finally {
       _updateStatus(AuthenticationStatus.unauthenticated);
     }
   }
 
   void dispose() {
     _authenticationStatusSubject.close();
+  }
+
+  /// Ensures PublicClientApplication is initialized before it is used.
+  void _pcaInitializedGuard() {
+    if (pca == null) {
+      throw new MsalException(
+          "PublicClientApplication must be initialized before use.");
+    }
   }
 }

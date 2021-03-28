@@ -1,1 +1,8 @@
-enum AuthenticationStatus { none, ready, authenticated, unauthenticated }
+enum AuthenticationStatus {
+  none,
+  ready,
+  authenticated,
+  authenticating,
+  unauthenticated,
+  failed
+}
