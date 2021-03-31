@@ -43,7 +43,7 @@ class _PrivateWidgetState extends State<PrivateWidget> {
 
   _callEndpoint() async {
     var res = await _authHttp!
-        .get(Uri.parse("https://msalflutterapi.azurewebsites.net/testauth"));
+        .get("https://msalflutterapi.azurewebsites.net/testauth");
     setState(() {
       output = res.body;
     });

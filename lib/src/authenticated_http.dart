@@ -3,32 +3,34 @@ import 'package:msal_guard/msal_guard.dart';
 
 class AuthenticatedHttp {
   AuthenticationService authService;
+  final String? _baseUrl;
 
   // get the auth service
-  AuthenticatedHttp(this.authService);
+  AuthenticatedHttp(this.authService, {String? baseUrl})
+      : _baseUrl = _formatBaseUrl(baseUrl);
 
-  Future<http.Response> delete(Uri url,
+  Future<http.Response> delete(String url,
       {Map<String, String>? headers, Object? body}) async {
     headers = await _addAuthHeaders(headers);
-    return await http.delete(url, headers: headers, body: body);
+    return await http.delete(_getFullUrl(url), headers: headers, body: body);
   }
 
-  Future<http.Response> get(Uri url, {Map<String, String>? headers}) async {
+  Future<http.Response> get(String url, {Map<String, String>? headers}) async {
     headers = await _addAuthHeaders(headers);
-    return await http.get(url, headers: headers);
+    return await http.get(_getFullUrl(url), headers: headers);
   }
 
-  Future<http.Response> patch(Uri url,
+  Future<http.Response> patch(String url,
       {Map<String, String>? headers, Object? body}) async {
     headers = await _addAuthHeaders(headers);
-    return await http.patch(url, headers: headers, body: body);
+    return await http.patch(_getFullUrl(url), headers: headers, body: body);
   }
 
-  Future<http.Response> post(Uri url,
+  Future<http.Response> post(String url,
       {Map<String, String>? headers, Object? body}) async {
     headers = await _addAuthHeaders(headers);
 
-    return await http.post(url, headers: headers, body: body);
+    return await http.post(_getFullUrl(url), headers: headers, body: body);
   }
 
   Future<Map<String, String>> _addAuthHeaders(
@@ -49,5 +51,30 @@ class AuthenticatedHttp {
 
     //return
     return headers;
+  }
+
+  static String? _formatBaseUrl(String? url) {
+    if (url == null) {
+      return url;
+    }
+
+    if (url.endsWith("/")) {
+      url = url.substring(0, url.length - 1);
+    }
+  }
+
+  /// returns the complete url, adding baseurl if given url is path
+  Uri _getFullUrl(String url) {
+    //if base not set, or is full url, return
+    if (_baseUrl == null ||
+        url.toLowerCase().startsWith("http://") ||
+        url.toLowerCase().startsWith("https://")) {
+      return Uri.parse(url);
+    }
+
+    if (!url.startsWith("/")) {
+      url = "/" + url;
+    }
+    return Uri.parse("$_baseUrl$url");
   }
 }
