@@ -6,7 +6,16 @@ import 'authentication_service.dart';
 import 'authentication_status.dart';
 
 /// Create a new MsalGuard widget
+/// @param publicWidget The widget to display when user is not authenticated
+/// @param guardedWidget The widget to display when user is authenticated
+/// @param loadingWidget the widget to display when transitioning between states and authenticating
+/// @param clientId the client id of the client applciation in Azure AD
 /// @param scopes The default scopes to be used on the app against its main API endpoint. Default scopes used for login and checking auth status
+/// @param authority The authority url to authenticate against
+/// @param redirectUri the redirect uri
+/// @param androidRedirectUri redirect uri override for android
+/// @param iosRedirectUri redirect uri override for iOS
+/// @param apiBaseUrl The base url of the api against which authenticated calls will be made. Used for authenticated_http service to allow calling paths.
 class MsalGuard extends StatefulWidget {
   const MsalGuard(
       {Key? key,
@@ -18,7 +27,8 @@ class MsalGuard extends StatefulWidget {
       this.authority,
       this.redirectUri,
       this.androidRedirectUri,
-      this.iosRedirectUri})
+      this.iosRedirectUri,
+      this.apiBaseUrl})
       : super(key: key);
 
   final Widget publicWidget;
@@ -29,6 +39,8 @@ class MsalGuard extends StatefulWidget {
   final String? authority;
   final String? redirectUri;
   final List<String> scopes;
+
+  final String? apiBaseUrl;
 
   //redirect uri overrides
   final String? androidRedirectUri;
@@ -41,7 +53,8 @@ class MsalGuard extends StatefulWidget {
       authority: authority,
       redirectUri: redirectUri,
       androidRedirectUri: androidRedirectUri,
-      iosRedirectUri: iosRedirectUri);
+      iosRedirectUri: iosRedirectUri,
+      apiBaseUrl: apiBaseUrl);
 }
 
 class _MsalGuardState extends State<MsalGuard> {
@@ -51,6 +64,7 @@ class _MsalGuardState extends State<MsalGuard> {
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
+  final String? apiBaseUrl;
 
   late AuthenticationService _authenticationService;
 
@@ -60,7 +74,8 @@ class _MsalGuardState extends State<MsalGuard> {
       this.authority,
       this.redirectUri,
       this.androidRedirectUri,
-      this.iosRedirectUri}) {
+      this.iosRedirectUri,
+      this.apiBaseUrl}) {
     _authenticationService = AuthenticationService(
         clientId: this.clientId,
         defaultScopes: scopes,
@@ -87,7 +102,8 @@ class _MsalGuardState extends State<MsalGuard> {
           Provider<AuthenticationService>(
               create: (_) => _authenticationService),
           Provider<AuthenticatedHttp>(
-              create: (_) => AuthenticatedHttp(_authenticationService))
+              create: (_) => AuthenticatedHttp(_authenticationService,
+                  baseUrl: apiBaseUrl))
         ],
         child: StreamBuilder(
           initialData: widget.loadingWidget,

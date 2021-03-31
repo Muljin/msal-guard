@@ -1,8 +1,9 @@
 ## Very Early alpha release
 Warning, this package is in very early release and will be subjected to constant breaking changes with no warning.
-
+## [0.0.1-alpha.3]
+* Added apiBase url to msal guard itself to be passed onto AuthenticatedHttp service
 ## [0.0.1-alpha.2]
-Updated to include base url property on AuthenticatedHttp service and changed parameters for calls to be strings.
+* Updated to include base url property on AuthenticatedHttp service and changed parameters for calls to be strings.
 
 ## [0.0.1-alpha.1] - Very Early alpha release
 First release for the test MSAL Guard library, a companion library to Msal Flutter.
