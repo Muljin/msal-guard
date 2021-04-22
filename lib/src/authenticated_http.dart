@@ -61,6 +61,8 @@ class AuthenticatedHttp {
     if (url.endsWith("/")) {
       url = url.substring(0, url.length - 1);
     }
+
+    return url;
   }
 
   /// returns the complete url, adding baseurl if given url is path
@@ -69,6 +71,7 @@ class AuthenticatedHttp {
     if (_baseUrl == null ||
         url.toLowerCase().startsWith("http://") ||
         url.toLowerCase().startsWith("https://")) {
+      print("base url was null");
       return Uri.parse(url);
     }
 

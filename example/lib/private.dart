@@ -42,8 +42,7 @@ class _PrivateWidgetState extends State<PrivateWidget> {
   }
 
   _callEndpoint() async {
-    var res = await _authHttp!
-        .get("https://msalflutterapi.azurewebsites.net/testauth");
+    var res = await _authHttp!.get("testauth");
     setState(() {
       output = res.body;
     });

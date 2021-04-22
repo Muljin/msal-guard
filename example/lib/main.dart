@@ -40,6 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
     "https://msalfluttertest.onmicrosoft.com/msaltesterapi/All"
   ];
 
+  static const String _apiUrl = "https://msalflutterapi.azurewebsites.net";
+
   @override
   Widget build(BuildContext context) {
     return MsalGuard(
@@ -50,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
       authority: _authority,
       redirectUri: _redirectUri,
       scopes: _scopes,
+      apiBaseUrl: _apiUrl,
     );
   }
 }
