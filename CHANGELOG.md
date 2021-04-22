@@ -1,5 +1,7 @@
 ## Very Early alpha release
 Warning, this package is in very early release and will be subjected to constant breaking changes with no warning.
+## [0.0.1-alpha.6]
+* Moved to sal flutter 2.0.0-alpha.3
 ## [0.0.1-alpha.5]
 * Moved to msal flutter 2.0.0-alpha.2 for iOS support
 ## [0.0.1-alpha.4]
