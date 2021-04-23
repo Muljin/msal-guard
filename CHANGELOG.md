@@ -1,5 +1,7 @@
 ## Very Early alpha release
 Warning, this package is in very early release and will be subjected to constant breaking changes with no warning.
+## [0.0.1-alpha.7]
+* Defaulting to content-type: application/json
 ## [0.0.1-alpha.6]
 * Moved to sal flutter 2.0.0-alpha.3
 ## [0.0.1-alpha.5]

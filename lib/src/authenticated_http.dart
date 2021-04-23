@@ -39,6 +39,11 @@ class AuthenticatedHttp {
       headers = new Map<String, String>();
     }
 
+    //default to application/json
+    if (!headers.keys.map((e) => e.toLowerCase()).contains('content-type')) {
+      headers['Content-Type'] = 'application/json; charset=UTF-8';
+    }
+
     String? token;
     try {
       token = await authService.acquireTokenSilently();
