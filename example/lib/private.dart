@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:msal_guard/msal_guard.dart';
 import 'package:provider/provider.dart';
+import 'package:msal_flutter/msal_flutter.dart';
 
 class PrivateWidget extends StatefulWidget {
   @override
@@ -42,10 +43,15 @@ class _PrivateWidgetState extends State<PrivateWidget> {
   }
 
   _callEndpoint() async {
+    try{
     var res = await _authHttp!.get("testauth");
     setState(() {
       output = res.body;
     });
+    } on MsalException catch(e){
+      print(e);
+      print(e.errorMessage);
+    }
   }
 
   _logout() async {
