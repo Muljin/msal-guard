@@ -12,7 +12,13 @@ class LoginWidget extends StatelessWidget {
             Text('Login page example'),
             ElevatedButton(
                 onPressed: context.read<AuthenticationService>().login,
-                child: Text('Login'))
+                child: Text('Login')),
+            ElevatedButton(
+              onPressed: () => context.read<AuthenticationService>().login(
+                  authorityOverride:
+                      "https://msalfluttertest.b2clogin.com/tfp/3fab2993-1fec-4a8c-a6d8-2bfea01e64ea/B2C_1_phone"),
+              child: Text("Login with Google"),
+            )
           ],
         ));
   }

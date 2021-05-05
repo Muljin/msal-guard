@@ -20,6 +20,7 @@ class AuthenticationService {
   final String? iosRedirectUri;
 
   PublicClientApplication? pca;
+  String? _currentAuthority;
   List<String> defaultScopes;
 
   // behavior subject
@@ -41,10 +42,11 @@ class AuthenticationService {
 
   /// Initialisation function. Only to be called once on startup or first usage of auth service.
   /// @param defaultScopes A set of scopes which act as the default scopes for the app against its primary backend
-  Future init() async {
+  Future init({String? authorityOverride}) async {
+    _currentAuthority = authorityOverride ?? authority;
     pca = await PublicClientApplication.createPublicClientApplication(
         this.clientId,
-        authority: this.authority,
+        authority: _currentAuthority,
         redirectUri: this.redirectUri,
         androidRedirectUri: this.androidRedirectUri,
         iosRedirectUri: this.iosRedirectUri);
@@ -81,8 +83,15 @@ class AuthenticationService {
     }
   }
 
-  Future login() async {
+  Future login({String? authorityOverride}) async {
     try {
+      // if override set, reinit with new authority
+      if (pca == null || _currentAuthority != authorityOverride) {
+        print("Logging in with a new authority");
+        init(authorityOverride: _currentAuthority ?? authority);
+      }
+
+      print("Logging in");
       _updateStatus(AuthenticationStatus.authenticating);
       await pca!.acquireToken(defaultScopes);
       _updateStatus(AuthenticationStatus.authenticated);

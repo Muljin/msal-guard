@@ -1,5 +1,8 @@
 ## Very Early alpha release
 Warning, this package is in very early release and will be subjected to constant breaking changes with no warning.
+## [0.0.1-alpha.8]
+* Added login authority override to allow using different policies when working with social login providers
+* updated for msal flutter 2.0.0-alpha.4 to support changes
 ## [0.0.1-alpha.7]
 * Defaulting to content-type: application/json
 ## [0.0.1-alpha.6]
