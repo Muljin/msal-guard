@@ -1,6 +1,6 @@
 name: msal_guard
 description: Guard widget for the Msal Flutter library
-version: 0.0.1-alpha.8
+version: 0.0.1-alpha.9
 homepage: https://github.com/muljin/msal-guard
 repository: https://github.com/muljin/msal-guard
 

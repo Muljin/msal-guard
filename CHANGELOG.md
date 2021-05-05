@@ -1,5 +1,7 @@
 ## Very Early alpha release
 Warning, this package is in very early release and will be subjected to constant breaking changes with no warning.
+## [0.0.1-alpha.9]
+* bug fixes for override authority not being await and value sent.
 ## [0.0.1-alpha.8]
 * Added login authority override to allow using different policies when working with social login providers
 * updated for msal flutter 2.0.0-alpha.4 to support changes

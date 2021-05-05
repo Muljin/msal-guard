@@ -84,11 +84,12 @@ class AuthenticationService {
   }
 
   Future login({String? authorityOverride}) async {
+    print(_currentAuthority);
     try {
       // if override set, reinit with new authority
       if (pca == null || _currentAuthority != authorityOverride) {
         print("Logging in with a new authority");
-        init(authorityOverride: _currentAuthority ?? authority);
+        await init(authorityOverride: authorityOverride ?? authority);
       }
 
       print("Logging in");
