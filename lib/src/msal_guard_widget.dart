@@ -98,7 +98,7 @@ class _MsalGuardState extends State<MsalGuard> {
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       print("Initialising auth");
-      _authenticationService.init();
+      _authenticationService.initAll();
     });
   }
 

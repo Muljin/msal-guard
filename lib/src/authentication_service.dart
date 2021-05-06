@@ -45,7 +45,11 @@ class AuthenticationService {
   /// Initialisation function. Only to be called once on startup or first usage of auth service.
   /// @param defaultScopes A set of scopes which act as the default scopes for the app against its primary backend
   Future init({String? authorityOverride}) async {
-    await _initAuthority(authorityOverride ?? defaultAuthority);
+    if(await _initAuthority(authorityOverride ?? defaultAuthority)){
+
+    }else{
+
+    }
   }
 
   Future initAll() async {
@@ -118,12 +122,13 @@ class AuthenticationService {
   }
 
   Future login({String? authorityOverride}) async {
-    print(_currentAuthority);
+    var authority = authorityOverride ?? defaultAuthority;
+
     try {
       // if override set, reinit with new authority
-      if (pca == null || _currentAuthority != authorityOverride) {
+      if (pca == null ||  _currentAuthority != authority) {
         print("Logging in with a new authority");
-        await init(authorityOverride: authorityOverride ?? defaultAuthority);
+        await init(authorityOverride: authority);
       }
 
       print("Logging in");
