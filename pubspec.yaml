@@ -12,7 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.1
-  msal_flutter: 2.0.0-alpha.4
+  # msal_flutter: 2.0.0-alpha.4
+  msal_flutter:
+    path: ../46-msal-flutter
   provider: ^5.0.0
   rxdart: ^0.26.0
 dev_dependencies:

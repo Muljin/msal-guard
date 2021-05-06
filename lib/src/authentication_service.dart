@@ -8,16 +8,18 @@ class AuthenticationService {
   AuthenticationService(
       {required this.clientId,
       required this.defaultScopes,
-      this.authority,
+      this.defaultAuthority,
+      this.additionalAuthorities,
       this.redirectUri,
       this.androidRedirectUri,
       this.iosRedirectUri});
 
   final String clientId;
-  final String? authority;
+  final String? defaultAuthority;
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
+  final List<String>? additionalAuthorities;
 
   PublicClientApplication? pca;
   String? _currentAuthority;
@@ -43,7 +45,18 @@ class AuthenticationService {
   /// Initialisation function. Only to be called once on startup or first usage of auth service.
   /// @param defaultScopes A set of scopes which act as the default scopes for the app against its primary backend
   Future init({String? authorityOverride}) async {
-    _currentAuthority = authorityOverride ?? authority;
+    _currentAuthority = authorityOverride ?? defaultAuthority;
+
+    if (await _initAuthority(_currentAuthority!) ||
+        await _tryInitNoneDefaultAuthorities()) {
+      _updateStatus(AuthenticationStatus.authenticated);
+    } else {
+      _updateStatus(AuthenticationStatus.unauthenticated);
+    }
+  }
+
+  //initiate an authority
+  Future<bool> _initAuthority(String authority) async {
     pca = await PublicClientApplication.createPublicClientApplication(
         this.clientId,
         authority: _currentAuthority,
@@ -54,9 +67,29 @@ class AuthenticationService {
     //store the default scopes for the app
     try {
       await acquireTokenSilently();
-    } on MsalNoAccountException {
-      _updateStatus(AuthenticationStatus.unauthenticated);
+      _currentAuthority = authority;
+      return true;
+    } on Exception {
+      print("Authority $authority Failed");
+      return false;
     }
+  }
+
+  //try init all none default authorities until one works
+  Future<bool> _tryInitNoneDefaultAuthorities() async {
+    print("Trying to initialize none default");
+    if (additionalAuthorities == null || additionalAuthorities!.length == 0) {
+      print("None default null or empty");
+      print(additionalAuthorities);
+      return false;
+    }
+    for (var a in additionalAuthorities!) {
+      print("None default loop.");
+      if (await _initAuthority(a)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Future<String> acquireToken({List<String>? scopes}) async {
@@ -89,7 +122,7 @@ class AuthenticationService {
       // if override set, reinit with new authority
       if (pca == null || _currentAuthority != authorityOverride) {
         print("Logging in with a new authority");
-        await init(authorityOverride: authorityOverride ?? authority);
+        await init(authorityOverride: authorityOverride ?? defaultAuthority);
       }
 
       print("Logging in");

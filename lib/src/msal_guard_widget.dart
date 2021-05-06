@@ -25,6 +25,7 @@ class MsalGuard extends StatefulWidget {
       required this.clientId,
       required this.scopes,
       this.authority,
+      this.additionalAuthorities,
       this.redirectUri,
       this.androidRedirectUri,
       this.iosRedirectUri,
@@ -37,6 +38,7 @@ class MsalGuard extends StatefulWidget {
 
   final String clientId;
   final String? authority;
+  final List<String>? additionalAuthorities;
   final String? redirectUri;
   final List<String> scopes;
 
@@ -51,6 +53,7 @@ class MsalGuard extends StatefulWidget {
       clientId: clientId,
       scopes: scopes,
       authority: authority,
+      additionalAuthorities: additionalAuthorities,
       redirectUri: redirectUri,
       androidRedirectUri: androidRedirectUri,
       iosRedirectUri: iosRedirectUri,
@@ -61,6 +64,7 @@ class _MsalGuardState extends State<MsalGuard> {
   final String clientId;
   final List<String> scopes;
   final String? authority;
+  final List<String>? additionalAuthorities;
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
@@ -68,18 +72,21 @@ class _MsalGuardState extends State<MsalGuard> {
 
   late AuthenticationService _authenticationService;
 
-  _MsalGuardState(
-      {required this.clientId,
-      required this.scopes,
-      this.authority,
-      this.redirectUri,
-      this.androidRedirectUri,
-      this.iosRedirectUri,
-      this.apiBaseUrl}) {
+  _MsalGuardState({
+    required this.clientId,
+    required this.scopes,
+    this.authority,
+    this.redirectUri,
+    this.androidRedirectUri,
+    this.iosRedirectUri,
+    this.apiBaseUrl,
+    this.additionalAuthorities,
+  }) {
     _authenticationService = AuthenticationService(
         clientId: this.clientId,
         defaultScopes: scopes,
-        authority: this.authority,
+        defaultAuthority: this.authority,
+        additionalAuthorities: additionalAuthorities,
         redirectUri: this.redirectUri,
         iosRedirectUri: this.iosRedirectUri,
         androidRedirectUri: this.androidRedirectUri);
