@@ -1,5 +1,7 @@
 ## Very Early alpha release
 Warning, this package is in very early release and will be subjected to constant breaking changes with no warning.
+## [0.0.1-alpha.15]
+* Removed changes for multiple authorities which seem unviable.
 ## [0.0.1-alpha.14]
 * null fix
 ## [0.0.1-alpha.13]

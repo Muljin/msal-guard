@@ -9,7 +9,6 @@ class AuthenticationService {
       {required this.clientId,
       required this.defaultScopes,
       this.defaultAuthority,
-      this.additionalAuthorities,
       this.redirectUri,
       this.androidRedirectUri,
       this.iosRedirectUri});
@@ -19,7 +18,6 @@ class AuthenticationService {
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
-  final List<String>? additionalAuthorities;
 
   PublicClientApplication? pca;
   String? _currentAuthority;
@@ -43,26 +41,24 @@ class AuthenticationService {
   }
 
   /// Initialisation function. Only to be called once on startup or first usage of auth service.
-  /// @param defaultScopes A set of scopes which act as the default scopes for the app against its primary backend
-  Future init({String? authorityOverride}) async {
-    if(await _initAuthority(authorityOverride ?? defaultAuthority)){
-
-    }else{
-
-    }
-  }
-
-  Future initAll() async {
-    if (await _initAuthority(defaultAuthority) ||
-        await _tryInitNoneDefaultAuthorities()) {
-      _updateStatus(AuthenticationStatus.authenticated);
-    } else {
-      _updateStatus(AuthenticationStatus.unauthenticated);
+  /// @param authorityOverride A override for the authority to use while initiating.
+  /// This should be used when user previously logged in using a different authority to null such
+  /// as when signing in with different userflows, such as seperate flows for different social providers
+  Future init() async {
+    await _initPca(defaultAuthority);
+    //store the default scopes for the app
+    try {
+      await acquireTokenSilently();
+      _authenticationStatusSubject.add(AuthenticationStatus.authenticated);
+    } on Exception {
+      print(
+          "Default init signin failed. USer not signed in to default authority.");
+      _authenticationStatusSubject.add(AuthenticationStatus.unauthenticated);
     }
   }
 
   //initiate an authority
-  Future<bool> _initAuthority(String? authority) async {
+  Future _initPca(String? authority) async {
     _currentAuthority = authority;
     pca = await PublicClientApplication.createPublicClientApplication(
         this.clientId,
@@ -70,31 +66,6 @@ class AuthenticationService {
         redirectUri: this.redirectUri,
         androidRedirectUri: this.androidRedirectUri,
         iosRedirectUri: this.iosRedirectUri);
-
-    //store the default scopes for the app
-    try {
-      await acquireTokenSilently();
-      return true;
-    } on Exception {
-      print("Authority $authority Failed");
-      return false;
-    }
-  }
-
-  //try init all none default authorities until one works
-  Future<bool> _tryInitNoneDefaultAuthorities() async {
-    print("Trying to initialize none default");
-    if (additionalAuthorities == null || additionalAuthorities!.length == 0) {
-      print("None default null or empty");
-      return false;
-    }
-    for (var a in additionalAuthorities!) {
-      print("None default loop.");
-      if (await _initAuthority(a)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   Future<String> acquireToken({List<String>? scopes}) async {
@@ -126,9 +97,8 @@ class AuthenticationService {
 
     try {
       // if override set, reinit with new authority
-      if (pca == null ||  _currentAuthority != authority) {
-        print("Logging in with a new authority");
-        await init(authorityOverride: authority);
+      if (pca == null || _currentAuthority != authority) {
+        await _initPca(authority);
       }
 
       print("Logging in");

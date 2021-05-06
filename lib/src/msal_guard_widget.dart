@@ -53,7 +53,6 @@ class MsalGuard extends StatefulWidget {
       clientId: clientId,
       scopes: scopes,
       authority: authority,
-      additionalAuthorities: additionalAuthorities,
       redirectUri: redirectUri,
       androidRedirectUri: androidRedirectUri,
       iosRedirectUri: iosRedirectUri,
@@ -64,7 +63,6 @@ class _MsalGuardState extends State<MsalGuard> {
   final String clientId;
   final List<String> scopes;
   final String? authority;
-  final List<String>? additionalAuthorities;
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
@@ -80,13 +78,11 @@ class _MsalGuardState extends State<MsalGuard> {
     this.androidRedirectUri,
     this.iosRedirectUri,
     this.apiBaseUrl,
-    this.additionalAuthorities,
   }) {
     _authenticationService = AuthenticationService(
         clientId: this.clientId,
         defaultScopes: scopes,
         defaultAuthority: this.authority,
-        additionalAuthorities: additionalAuthorities,
         redirectUri: this.redirectUri,
         iosRedirectUri: this.iosRedirectUri,
         androidRedirectUri: this.androidRedirectUri);
@@ -98,7 +94,7 @@ class _MsalGuardState extends State<MsalGuard> {
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       print("Initialising auth");
-      _authenticationService.initAll();
+      _authenticationService.init();
     });
   }
 
