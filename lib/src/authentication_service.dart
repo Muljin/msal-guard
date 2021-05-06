@@ -53,7 +53,7 @@ class AuthenticationService {
   }
 
   Future initAll() async {
-    if (await _initAuthority(_currentAuthority) ||
+    if (await _initAuthority(defaultAuthority) ||
         await _tryInitNoneDefaultAuthorities()) {
       _updateStatus(AuthenticationStatus.authenticated);
     } else {
