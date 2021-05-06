@@ -45,8 +45,10 @@ class AuthenticationService {
   /// Initialisation function. Only to be called once on startup or first usage of auth service.
   /// @param defaultScopes A set of scopes which act as the default scopes for the app against its primary backend
   Future init({String? authorityOverride}) async {
-    _currentAuthority = authorityOverride ?? defaultAuthority;
+    await _initAuthority(authorityOverride ?? defaultAuthority);
+  }
 
+  Future initAll() async {
     if (await _initAuthority(_currentAuthority!) ||
         await _tryInitNoneDefaultAuthorities()) {
       _updateStatus(AuthenticationStatus.authenticated);
@@ -56,7 +58,8 @@ class AuthenticationService {
   }
 
   //initiate an authority
-  Future<bool> _initAuthority(String authority) async {
+  Future<bool> _initAuthority(String? authority) async {
+    _currentAuthority = authority;
     pca = await PublicClientApplication.createPublicClientApplication(
         this.clientId,
         authority: authority,
@@ -67,7 +70,6 @@ class AuthenticationService {
     //store the default scopes for the app
     try {
       await acquireTokenSilently();
-      _currentAuthority = authority;
       return true;
     } on Exception {
       print("Authority $authority Failed");
