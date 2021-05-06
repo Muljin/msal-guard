@@ -1,5 +1,9 @@
 ## Very Early alpha release
 Warning, this package is in very early release and will be subjected to constant breaking changes with no warning.
+## [0.0.1-alpha.11]
+* bug fix in handling of multiple authorities
+## [0.0.1-alpha.10]
+* Updated to msalflutter alpha5, and added logic to try to handle multiple authorities for social sign in options.
 ## [0.0.1-alpha.9]
 * bug fixes for override authority not being await and value sent.
 ## [0.0.1-alpha.8]

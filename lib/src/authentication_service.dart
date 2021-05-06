@@ -59,7 +59,7 @@ class AuthenticationService {
   Future<bool> _initAuthority(String authority) async {
     pca = await PublicClientApplication.createPublicClientApplication(
         this.clientId,
-        authority: _currentAuthority,
+        authority: authority,
         redirectUri: this.redirectUri,
         androidRedirectUri: this.androidRedirectUri,
         iosRedirectUri: this.iosRedirectUri);
@@ -80,7 +80,6 @@ class AuthenticationService {
     print("Trying to initialize none default");
     if (additionalAuthorities == null || additionalAuthorities!.length == 0) {
       print("None default null or empty");
-      print(additionalAuthorities);
       return false;
     }
     for (var a in additionalAuthorities!) {
