@@ -11,10 +11,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.1
+  http: ">=0.13.1 <1.0.0"
   msal_flutter: 2.0.0-alpha.5
-  provider: ^5.0.0
-  rxdart: ^0.26.0
+  provider: ">=5.0.0 <7.0.0"
+  rxdart: ">=0.26.0 <1.0.0"
 dev_dependencies:
   flutter_test:
     sdk: flutter
