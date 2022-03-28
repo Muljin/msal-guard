@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:msal_guard/msal_guard.dart';
 import 'package:provider/provider.dart';
 
-import 'authentication_service.dart';
-import 'authentication_status.dart';
-
 /// Create a new MsalGuard widget
 /// @param publicWidget The widget to display when user is not authenticated
 /// @param guardedWidget The widget to display when user is authenticated
@@ -29,6 +26,7 @@ class MsalGuard extends StatefulWidget {
       this.redirectUri,
       this.androidRedirectUri,
       this.iosRedirectUri,
+      this.keychain,
       this.apiBaseUrl})
       : super(key: key);
 
@@ -44,6 +42,10 @@ class MsalGuard extends StatefulWidget {
 
   final String? apiBaseUrl;
 
+  /// this is only used in ios it won't affect android configuration
+  /// for more info go to https://docs.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-macos-ios#silent-sso-between-apps
+  final String? keychain;
+
   //redirect uri overrides
   final String? androidRedirectUri;
   final String? iosRedirectUri;
@@ -56,6 +58,7 @@ class MsalGuard extends StatefulWidget {
       redirectUri: redirectUri,
       androidRedirectUri: androidRedirectUri,
       iosRedirectUri: iosRedirectUri,
+      keychain: keychain,
       apiBaseUrl: apiBaseUrl);
 }
 
@@ -67,6 +70,7 @@ class _MsalGuardState extends State<MsalGuard> {
   final String? androidRedirectUri;
   final String? iosRedirectUri;
   final String? apiBaseUrl;
+  final String? keychain;
 
   late AuthenticationService _authenticationService;
 
@@ -78,12 +82,14 @@ class _MsalGuardState extends State<MsalGuard> {
     this.androidRedirectUri,
     this.iosRedirectUri,
     this.apiBaseUrl,
+    this.keychain,
   }) {
     _authenticationService = AuthenticationService(
         clientId: this.clientId,
         defaultScopes: scopes,
         defaultAuthority: this.authority,
         redirectUri: this.redirectUri,
+        keychain: this.keychain,
         iosRedirectUri: this.iosRedirectUri,
         androidRedirectUri: this.androidRedirectUri);
   }
@@ -108,23 +114,24 @@ class _MsalGuardState extends State<MsalGuard> {
               create: (_) => AuthenticatedHttp(_authenticationService,
                   baseUrl: apiBaseUrl))
         ],
-        child: StreamBuilder(
-          initialData: widget.loadingWidget,
-          stream: _authenticationService.authenticationStatus,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return widget.loadingWidget;
-            }
-            if (snapshot.data == AuthenticationStatus.unauthenticated ||
-                snapshot.data == AuthenticationStatus.failed) {
-              return widget.publicWidget;
-            } else if (snapshot.data == AuthenticationStatus.authenticated) {
-              return widget.guardedWidget;
-            } else {
-              return widget.loadingWidget;
-            }
-          },
-        ));
+        builder: (context, wiget) => StreamBuilder(
+              // initialData: widget.loadingWidget,
+              stream: _authenticationService.authenticationStatus,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return widget.loadingWidget;
+                }
+                if (snapshot.data == AuthenticationStatus.unauthenticated ||
+                    snapshot.data == AuthenticationStatus.failed) {
+                  return widget.publicWidget;
+                } else if (snapshot.data ==
+                    AuthenticationStatus.authenticated) {
+                  return widget.guardedWidget;
+                } else {
+                  return widget.loadingWidget;
+                }
+              },
+            ));
   }
 
   @override
