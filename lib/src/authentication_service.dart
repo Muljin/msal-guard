@@ -10,6 +10,7 @@ class AuthenticationService {
       required this.defaultScopes,
       this.defaultAuthority,
       this.redirectUri,
+      this.keychain,
       this.androidRedirectUri,
       this.iosRedirectUri});
 
@@ -18,6 +19,7 @@ class AuthenticationService {
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
+  final String? keychain;
 
   PublicClientApplication? pca;
   String? _currentAuthority;
@@ -65,7 +67,8 @@ class AuthenticationService {
         authority: authority,
         redirectUri: this.redirectUri,
         androidRedirectUri: this.androidRedirectUri,
-        iosRedirectUri: this.iosRedirectUri);
+        iosRedirectUri: this.iosRedirectUri,
+        keychain: this.keychain);
   }
 
   Future<String> acquireToken({List<String>? scopes}) async {
@@ -107,12 +110,13 @@ class AuthenticationService {
       _updateStatus(AuthenticationStatus.authenticated);
     } catch (e) {
       _updateStatus(AuthenticationStatus.failed);
+      rethrow;
     }
   }
 
-  Future logout() async {
+  Future logout({bool browserLogout = false}) async {
     try {
-      await pca!.logout();
+      await pca!.logout(browserLogout: browserLogout);
     } finally {
       _updateStatus(AuthenticationStatus.unauthenticated);
     }
