@@ -108,7 +108,7 @@ class AuthenticationService {
       _updateStatus(AuthenticationStatus.authenticating);
       await pca!.acquireToken(defaultScopes);
       _updateStatus(AuthenticationStatus.authenticated);
-    } on MsalException catch (e) {
+    } catch (e) {
       _updateStatus(AuthenticationStatus.failed);
       rethrow;
     }
