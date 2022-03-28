@@ -109,13 +109,12 @@ class AuthenticationService {
       await pca!.acquireToken(defaultScopes);
       _updateStatus(AuthenticationStatus.authenticated);
     } on MsalException catch (e) {
-      print(e.errorMessage);
       _updateStatus(AuthenticationStatus.failed);
       rethrow;
     }
   }
 
-  Future logout([bool browserLogout = false]) async {
+  Future logout({bool browserLogout = false}) async {
     try {
       await pca!.logout(browserLogout: browserLogout);
     } finally {

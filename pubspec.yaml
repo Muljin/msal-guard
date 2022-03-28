@@ -3,7 +3,6 @@ description: Guard widget for the Msal Flutter library
 version: 0.0.1-beta.1
 homepage: https://github.com/muljin/msal-guard
 repository: https://github.com/muljin/msal-guard
-publish_to: none
 environment:
   sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.17.0"
