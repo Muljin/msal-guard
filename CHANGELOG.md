@@ -1,3 +1,9 @@
+## [0.0.1-beta.2]
+* broswser privateSession ios-only.
+* msal android bumpup to 2.2.3. ``Note:`` add `authorization_in_current_task:false` to msal_default_config.json
+## [0.0.1-beta.1]
+* change default kaychain feature
+* logout from browser
 ## Very Early alpha release
 Warning, this package is in very early release and will be subjected to constant breaking changes with no warning.
 ## [0.0.1-alpha.15]

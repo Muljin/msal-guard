@@ -27,6 +27,7 @@ class MsalGuard extends StatefulWidget {
       this.androidRedirectUri,
       this.iosRedirectUri,
       this.keychain,
+      this.privateSession,
       this.apiBaseUrl})
       : super(key: key);
 
@@ -45,6 +46,9 @@ class MsalGuard extends StatefulWidget {
   /// this is only used in ios it won't affect android configuration
   /// for more info go to https://docs.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-macos-ios#silent-sso-between-apps
   final String? keychain;
+  /// privateSession is set to true to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session. Whether the request is honored depends on the user’s default web browser. Safari always honors the request.
+  /// The value of this property is false by default.
+  final bool? privateSession;
 
   //redirect uri overrides
   final String? androidRedirectUri;
@@ -59,6 +63,7 @@ class MsalGuard extends StatefulWidget {
       androidRedirectUri: androidRedirectUri,
       iosRedirectUri: iosRedirectUri,
       keychain: keychain,
+      privateSession: privateSession,
       apiBaseUrl: apiBaseUrl);
 }
 
@@ -71,6 +76,7 @@ class _MsalGuardState extends State<MsalGuard> {
   final String? iosRedirectUri;
   final String? apiBaseUrl;
   final String? keychain;
+  final bool? privateSession;
 
   late AuthenticationService _authenticationService;
 
@@ -82,6 +88,7 @@ class _MsalGuardState extends State<MsalGuard> {
     this.androidRedirectUri,
     this.iosRedirectUri,
     this.apiBaseUrl,
+    this.privateSession,
     this.keychain,
   }) {
     _authenticationService = AuthenticationService(
@@ -91,6 +98,7 @@ class _MsalGuardState extends State<MsalGuard> {
         redirectUri: this.redirectUri,
         keychain: this.keychain,
         iosRedirectUri: this.iosRedirectUri,
+        privateSession: privateSession,
         androidRedirectUri: this.androidRedirectUri);
   }
 

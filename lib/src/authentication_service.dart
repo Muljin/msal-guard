@@ -12,7 +12,8 @@ class AuthenticationService {
       this.redirectUri,
       this.keychain,
       this.androidRedirectUri,
-      this.iosRedirectUri});
+      this.iosRedirectUri,
+      this.privateSession});
 
   final String clientId;
   final String? defaultAuthority;
@@ -20,6 +21,9 @@ class AuthenticationService {
   final String? androidRedirectUri;
   final String? iosRedirectUri;
   final String? keychain;
+  /// privateSession is set to true to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session. Whether the request is honored depends on the user’s default web browser. Safari always honors the request.
+  /// The value of this property is false by default.
+  final bool? privateSession;
 
   PublicClientApplication? pca;
   String? _currentAuthority;
@@ -68,7 +72,8 @@ class AuthenticationService {
         redirectUri: this.redirectUri,
         androidRedirectUri: this.androidRedirectUri,
         iosRedirectUri: this.iosRedirectUri,
-        keychain: this.keychain);
+        keychain: this.keychain,
+        privateSession: privateSession);
   }
 
   Future<String> acquireToken({List<String>? scopes}) async {
