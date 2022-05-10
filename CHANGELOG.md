@@ -1,3 +1,6 @@
+## [0.0.1]
+* stable release
+
 ## [0.0.1-beta.2]
 * broswser privateSession ios-only.
 * msal android bumpup to 2.2.3. ``Note:`` add `authorization_in_current_task:false` to msal_default_config.json
