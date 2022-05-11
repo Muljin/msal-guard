@@ -1,3 +1,6 @@
+# IMPORTANT ANNOUNCEMENT
+This package comes as is. Unfortunately we do not have the resources to offer free support, help, or review any PRs. Please feel free to fork or use this package in anyway you like. For paid support options please email us at info@muljin.com.
+
 # msal_guard_widget
 
 MSAL Guard is a highly opinionated implementation of a MSAL protected web application built for use on our client projects.
