@@ -1,5 +1,5 @@
 ## [0.0.2]
-* update msal Flutter constraints
+* update msal  Flutter constraints
 ## [0.0.1]
 * stable release
 
