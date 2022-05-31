@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:msal_flutter/msal_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -56,7 +58,8 @@ class AuthenticationService {
     try {
       await acquireTokenSilently();
       _authenticationStatusSubject.add(AuthenticationStatus.authenticated);
-    } on Exception {
+    } on Exception catch(e) {
+      log(e.toString());
       print(
           "Default init signin failed. USer not signed in to default authority.");
       _authenticationStatusSubject.add(AuthenticationStatus.unauthenticated);
