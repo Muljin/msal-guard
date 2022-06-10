@@ -33,6 +33,13 @@ class AuthenticatedHttp {
     return await http.post(_getFullUrl(url), headers: headers, body: body);
   }
 
+  Future<http.Response> put(String url,
+      {Map<String, String>? headers, Object? body}) async {
+    headers = await _addAuthHeaders(headers);
+
+    return await http.put(_getFullUrl(url), headers: headers, body: body);
+  }
+
   Future<Map<String, String>> _addAuthHeaders(
       Map<String, String>? headers) async {
     if (headers == null) {
