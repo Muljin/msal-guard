@@ -38,6 +38,9 @@ class AuthenticationService {
   /// Stream for updates to authentication status
   Stream<AuthenticationStatus> get authenticationStatus =>
       _authenticationStatusSubject.stream;
+  /// Current authentication status
+  AuthenticationStatus? get authStatus =>
+      _authenticationStatusSubject.value;
 
   /// Updates the authentication status
   void _updateStatus(AuthenticationStatus status) {
