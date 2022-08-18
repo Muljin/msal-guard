@@ -1,3 +1,5 @@
+## [0.0.3]
+* added ``authStatus`` getter
 ## [0.0.2]
 * update msal  Flutter constraints
 ## [0.0.1]
