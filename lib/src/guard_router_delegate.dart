@@ -62,21 +62,24 @@ class GuardRouterDelegate<T> extends RouterDelegate<T>
     this.navigatorObservers,
     this.onUnknownRoute,
     this.providers,
+    AuthenticationService? authenticationService,
   }) {
-    _authenticationService = AuthenticationService(
-        clientId: this.clientId,
-        defaultScopes: scopes,
-        defaultAuthority: this.authority,
-        redirectUri: this.redirectUri,
-        keychain: this.keychain,
-        iosRedirectUri: this.iosRedirectUri,
-        privateSession: privateSession,
-        androidRedirectUri: this.androidRedirectUri);
+    _authenticationService = authenticationService ??
+        AuthenticationService(
+            clientId: this.clientId,
+            defaultScopes: scopes,
+            defaultAuthority: this.authority,
+            redirectUri: this.redirectUri,
+            keychain: this.keychain,
+            iosRedirectUri: this.iosRedirectUri,
+            privateSession: privateSession,
+            androidRedirectUri: this.androidRedirectUri);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       print("Initialising auth");
       _authenticationService.init();
     });
   }
+
   late AuthenticationService _authenticationService;
   late GlobalKey<NavigatorState>? navKey;
 
