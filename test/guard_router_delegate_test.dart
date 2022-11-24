@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:msal_flutter/msal_flutter.dart';
 import 'package:msal_guard/msal_guard.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -37,14 +38,16 @@ void main() {
     testWidgets('should show loading widget', (WidgetTester tester) async {
       final myWidget = MaterialApp.router(
         routerDelegate: GuardRouterDelegate(
+            defaultScopes: ['https://graph.microsoft.com/User.Read'],
             authenticationService: mockAuthService,
             initialPublicRoute: '/',
             initialProtectedRoute: '/',
             onPublicRoute: onPublic,
             onProtectedRoute: onProtected,
             loadingWidget: LoadingWidget(),
-            clientId: 'clientId',
-            scopes: ['scopes']),
+            config: MSALPublicClientApplicationConfig(
+                androidRedirectUri: 'androidRedirectUri',
+                clientId: 'clientId')),
       );
 
       await tester.pumpWidget(myWidget);
@@ -56,14 +59,16 @@ void main() {
     testWidgets('should show protected widget', (WidgetTester tester) async {
       final myWidget = MaterialApp.router(
         routerDelegate: GuardRouterDelegate(
+            defaultScopes: ['https://graph.microsoft.com/User.Read'],
             authenticationService: mockAuthService,
             initialPublicRoute: '/',
             initialProtectedRoute: '/',
             onPublicRoute: onPublic,
             onProtectedRoute: onProtected,
             loadingWidget: LoadingWidget(),
-            clientId: 'clientId',
-            scopes: ['scopes']),
+            config: MSALPublicClientApplicationConfig(
+                androidRedirectUri: 'androidRedirectUri',
+                clientId: 'clientId')),
       );
       await tester.pumpWidget(myWidget);
       await mockAuthService.login();
@@ -73,14 +78,16 @@ void main() {
     testWidgets('should show public widget', (WidgetTester tester) async {
       final myWidget = MaterialApp.router(
         routerDelegate: GuardRouterDelegate(
+            defaultScopes: ['https://graph.microsoft.com/User.Read'],
             authenticationService: mockAuthService,
             initialPublicRoute: '/',
             initialProtectedRoute: '/',
             onPublicRoute: onPublic,
             onProtectedRoute: onProtected,
             loadingWidget: LoadingWidget(),
-            clientId: 'clientId',
-            scopes: ['scopes']),
+            config: MSALPublicClientApplicationConfig(
+                androidRedirectUri: 'androidRedirectUri',
+                clientId: 'clientId')),
       );
       await tester.pumpWidget(myWidget);
       await mockAuthService.logout();
@@ -90,14 +97,16 @@ void main() {
     testWidgets('auth flow test', (WidgetTester tester) async {
       final myWidget = MaterialApp.router(
         routerDelegate: GuardRouterDelegate(
+            defaultScopes: ['https://graph.microsoft.com/User.Read'],
             authenticationService: mockAuthService,
             initialPublicRoute: '/',
             initialProtectedRoute: '/',
             onPublicRoute: onPublic,
             onProtectedRoute: onProtected,
             loadingWidget: LoadingWidget(),
-            clientId: 'clientId',
-            scopes: ['scopes']),
+           config: MSALPublicClientApplicationConfig(
+                androidRedirectUri: 'androidRedirectUri',
+                clientId: 'clientId')),
       );
       // is showing loading view
       await tester.pumpWidget(myWidget);
