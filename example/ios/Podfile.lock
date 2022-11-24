@@ -1,15 +1,18 @@
 PODS:
   - Flutter (1.0.0)
-  - MSAL (1.1.16):
-    - MSAL/app-lib (= 1.1.16)
-  - MSAL/app-lib (1.1.16)
-  - msal_flutter (1.0.1):
+  - MSAL (1.2.5):
+    - MSAL/app-lib (= 1.2.5)
+  - MSAL/app-lib (1.2.5)
+  - msal_flutter (1.0.2):
     - Flutter
-    - MSAL (~> 1.1.14)
+    - MSAL (~> 1.2.0)
+  - shared_preferences_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - msal_flutter (from `.symlinks/plugins/msal_flutter/ios`)
+  - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -20,12 +23,15 @@ EXTERNAL SOURCES:
     :path: Flutter
   msal_flutter:
     :path: ".symlinks/plugins/msal_flutter/ios"
+  shared_preferences_ios:
+    :path: ".symlinks/plugins/shared_preferences_ios/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
-  MSAL: eabeb98e10cb4db46ad58cc73f4aa4584ec700f4
-  msal_flutter: 94aa2aab8422978f676d02e4c97c2cce81597983
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  MSAL: 5149daaa19228c2c27d81987634da15b50981cef
+  msal_flutter: 6affbfc5214d05ab2654adadd0c6f11714c57ddf
+  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
 
 PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.3

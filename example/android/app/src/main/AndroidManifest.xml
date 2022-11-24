@@ -5,6 +5,7 @@
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -33,13 +34,16 @@
             </intent-filter>
         </activity>
           <activity
-            android:name="com.microsoft.identity.client.BrowserTabActivity">
+            android:name="com.microsoft.identity.client.BrowserTabActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="msalc3aab3bb-dd2e-4bb5-8768-38f032570a71"
-                    android:host="auth" />
+                <data
+                android:host="com.example.example"
+                android:path="/TvkGQnk1ERb+l9pB4OeyeWrYmqo="
+                android:scheme="msauth" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
