@@ -21,7 +21,7 @@ class MsalGuard extends StatefulWidget {
       required this.loadingWidget,
       required this.clientId,
       required this.scopes,
-      this.authority,
+      required this.authority,
       this.additionalAuthorities,
       this.redirectUri,
       this.androidRedirectUri,
@@ -36,7 +36,7 @@ class MsalGuard extends StatefulWidget {
   final Widget loadingWidget;
 
   final String clientId;
-  final String? authority;
+  final String authority;
   final List<String>? additionalAuthorities;
   final String? redirectUri;
   final List<String> scopes;
@@ -46,6 +46,7 @@ class MsalGuard extends StatefulWidget {
   /// this is only used in ios it won't affect android configuration
   /// for more info go to https://docs.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-macos-ios#silent-sso-between-apps
   final String? keychain;
+
   /// privateSession is set to true to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session. Whether the request is honored depends on the user’s default web browser. Safari always honors the request.
   /// The value of this property is false by default.
   final bool? privateSession;
@@ -70,7 +71,7 @@ class MsalGuard extends StatefulWidget {
 class _MsalGuardState extends State<MsalGuard> {
   final String clientId;
   final List<String> scopes;
-  final String? authority;
+  final String authority;
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
@@ -83,7 +84,7 @@ class _MsalGuardState extends State<MsalGuard> {
   _MsalGuardState({
     required this.clientId,
     required this.scopes,
-    this.authority,
+    required this.authority,
     this.redirectUri,
     this.androidRedirectUri,
     this.iosRedirectUri,
@@ -92,14 +93,14 @@ class _MsalGuardState extends State<MsalGuard> {
     this.keychain,
   }) {
     _authenticationService = AuthenticationService(
-        clientId: this.clientId,
-        defaultScopes: scopes,
-        defaultAuthority: this.authority,
-        redirectUri: this.redirectUri,
-        keychain: this.keychain,
+      config: MSALPublicClientApplicationConfig(
+        clientId: clientId,
+        androidRedirectUri: this.androidRedirectUri,
         iosRedirectUri: this.iosRedirectUri,
-        privateSession: privateSession,
-        androidRedirectUri: this.androidRedirectUri);
+        authority: Uri.parse(authority),
+      ),
+      defaultScopes: scopes,
+    );
   }
 
   @override

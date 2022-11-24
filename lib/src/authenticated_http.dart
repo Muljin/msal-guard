@@ -53,9 +53,9 @@ class AuthenticatedHttp {
 
     String? token;
     try {
-      token = await authService.acquireTokenSilently();
-    } catch (MsalException) {
-      token = await authService.acquireToken();
+      token = (await authService.acquireTokenSilently())?.accessToken;
+    } catch (e) {
+      token = (await authService.acquireToken())?.accessToken;
     }
 
     //add the auth bearer token

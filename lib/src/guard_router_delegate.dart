@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:msal_flutter/msal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -20,27 +21,10 @@ class GuardRouterDelegate<T> extends RouterDelegate<T>
 
   final Widget loadingWidget;
 
-  final String clientId;
-  final String? authority;
-  final List<String>? additionalAuthorities;
-  final String? redirectUri;
-  final List<String> scopes;
-
   final String? apiBaseUrl;
 
   List<SingleChildWidget>? providers;
 
-  /// this is only used in ios it won't affect android configuration
-  /// for more info go to https://docs.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-macos-ios#silent-sso-between-apps
-  final String? keychain;
-
-  /// privateSession is set to true to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session. Whether the request is honored depends on the user’s default web browser. Safari always honors the request.
-  /// The value of this property is false by default.
-  final bool? privateSession;
-
-  //redirect uri overrides
-  final String? androidRedirectUri;
-  final String? iosRedirectUri;
   final Function(GlobalKey<NavigatorState>)? onKeyChange;
   GuardRouterDelegate({
     required this.initialPublicRoute,
@@ -48,32 +32,20 @@ class GuardRouterDelegate<T> extends RouterDelegate<T>
     required this.onPublicRoute,
     required this.onProtectedRoute,
     required this.loadingWidget,
-    required this.clientId,
-    required this.scopes,
+    required MSALPublicClientApplicationConfig config,
+    required List<String> defaultScopes,
+    MSALWebviewParameters? webParams,
+    AuthenticationService? authenticationService,
     this.onKeyChange,
-    this.authority,
-    this.additionalAuthorities,
-    this.redirectUri,
-    this.androidRedirectUri,
-    this.iosRedirectUri,
-    this.keychain,
-    this.privateSession,
     this.apiBaseUrl,
     this.navigatorObservers,
     this.onUnknownRoute,
     this.providers,
-    AuthenticationService? authenticationService,
-  }) {
-    _authenticationService = authenticationService ??
-        AuthenticationService(
-            clientId: this.clientId,
-            defaultScopes: scopes,
-            defaultAuthority: this.authority,
-            redirectUri: this.redirectUri,
-            keychain: this.keychain,
-            iosRedirectUri: this.iosRedirectUri,
-            privateSession: privateSession,
-            androidRedirectUri: this.androidRedirectUri);
+  }) : this._authenticationService = authenticationService ??
+            AuthenticationService(
+                config: config,
+                defaultScopes: defaultScopes,
+                webParams: webParams) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       print("Initialising auth");
       _authenticationService.init();
