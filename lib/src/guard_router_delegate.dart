@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import '../msal_guard.dart';
+import 'authentication_interceptor.dart';
+import 'client/authenticated_http.dart';
 import 'safe_navigator.dart';
 
 class GuardRouterDelegate<T> extends RouterDelegate<T>
@@ -66,8 +68,9 @@ class GuardRouterDelegate<T> extends RouterDelegate<T>
           Provider<AuthenticationService>(
               create: (_) => _authenticationService),
           Provider<AuthenticatedHttp>(
-              create: (_) => AuthenticatedHttp(_authenticationService,
-                  baseUrl: apiBaseUrl)),
+              create: (_) => AuthenticatedHttp(interceptors: [
+                    AuthenticationInterceptor(_authenticationService)
+                  ], baseUrl: apiBaseUrl)),
           ...?providers
         ],
         builder: (context, wiget) => StreamBuilder<AuthenticationStatus>(

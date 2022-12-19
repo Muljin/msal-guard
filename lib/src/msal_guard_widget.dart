@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:msal_guard/msal_guard.dart';
 import 'package:provider/provider.dart';
 
+import 'authentication_interceptor.dart';
+import 'client/authenticated_http.dart';
+
 /// Create a new MsalGuard widget
 /// @param publicWidget The widget to display when user is not authenticated
 /// @param guardedWidget The widget to display when user is authenticated
@@ -120,8 +123,9 @@ class _MsalGuardState extends State<MsalGuard> {
           Provider<AuthenticationService>(
               create: (_) => _authenticationService),
           Provider<AuthenticatedHttp>(
-              create: (_) => AuthenticatedHttp(_authenticationService,
-                  baseUrl: apiBaseUrl))
+              create: (_) => AuthenticatedHttp(interceptors: [
+                    AuthenticationInterceptor(_authenticationService)
+                  ], baseUrl: apiBaseUrl))
         ],
         builder: (context, wiget) => StreamBuilder(
               // initialData: widget.loadingWidget,
