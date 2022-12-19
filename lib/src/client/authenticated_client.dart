@@ -15,7 +15,7 @@ class AuthenticatedClient extends BaseClient {
 
   late final Client _inner;
   AuthenticatedClient({
-    required this.interceptors,
+    this.interceptors = const [],
     this.requestTimeout,
     this.onRequestTimeout,
     Client? client,

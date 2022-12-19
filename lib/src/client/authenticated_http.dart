@@ -11,14 +11,14 @@ class AuthenticatedHttp {
   final AuthenticatedClient _inner;
   final String? _baseUrl;
   AuthenticatedHttp({
-    List<Interceptor>? interceptors,
+    List<Interceptor> interceptors = const [],
     String? baseUrl,
     Duration? requestTimeout,
     TimeoutCallback? onRequestTimeout,
     Client? client,
   })  : _baseUrl = _formatBaseUrl(baseUrl),
         _inner = AuthenticatedClient(
-            interceptors: interceptors ?? [],
+            interceptors: interceptors,
             requestTimeout: requestTimeout,
             onRequestTimeout: onRequestTimeout,
             client: client);
