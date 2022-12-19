@@ -24,6 +24,7 @@ class GuardRouterDelegate<T> extends RouterDelegate<T>
   final Widget loadingWidget;
 
   final String? apiBaseUrl;
+  List<Interceptor>? httpInterceptors;
 
   List<SingleChildWidget>? providers;
 
@@ -40,6 +41,7 @@ class GuardRouterDelegate<T> extends RouterDelegate<T>
     AuthenticationService? authenticationService,
     this.onKeyChange,
     this.apiBaseUrl,
+    this.httpInterceptors,
     this.navigatorObservers,
     this.onUnknownRoute,
     this.providers,
@@ -69,7 +71,7 @@ class GuardRouterDelegate<T> extends RouterDelegate<T>
               create: (_) => _authenticationService),
           Provider<AuthenticatedHttp>(
               create: (_) => AuthenticatedHttp(interceptors: [
-                    AuthenticationInterceptor(_authenticationService)
+                    AuthenticationInterceptor(_authenticationService),...?httpInterceptors
                   ], baseUrl: apiBaseUrl)),
           ...?providers
         ],

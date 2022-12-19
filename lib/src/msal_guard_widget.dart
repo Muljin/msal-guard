@@ -31,7 +31,8 @@ class MsalGuard extends StatefulWidget {
       this.iosRedirectUri,
       this.keychain,
       this.privateSession,
-      this.apiBaseUrl})
+      this.apiBaseUrl,
+      this.httpInterceptors})
       : super(key: key);
 
   final Widget publicWidget;
@@ -46,6 +47,8 @@ class MsalGuard extends StatefulWidget {
 
   final String? apiBaseUrl;
 
+  final List<Interceptor>? httpInterceptors;
+
   /// this is only used in ios it won't affect android configuration
   /// for more info go to https://docs.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-macos-ios#silent-sso-between-apps
   final String? keychain;
@@ -59,7 +62,7 @@ class MsalGuard extends StatefulWidget {
   final String? iosRedirectUri;
 
   @override
-  _MsalGuardState createState() => _MsalGuardState(
+  State<MsalGuard> createState() => _MsalGuardState(
       clientId: clientId,
       scopes: scopes,
       authority: authority,
@@ -68,7 +71,8 @@ class MsalGuard extends StatefulWidget {
       iosRedirectUri: iosRedirectUri,
       keychain: keychain,
       privateSession: privateSession,
-      apiBaseUrl: apiBaseUrl);
+      apiBaseUrl: apiBaseUrl,
+      httpInterceptors: httpInterceptors);
 }
 
 class _MsalGuardState extends State<MsalGuard> {
@@ -78,6 +82,7 @@ class _MsalGuardState extends State<MsalGuard> {
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
+  final List<Interceptor>? httpInterceptors;
   final String? apiBaseUrl;
   final String? keychain;
   final bool? privateSession;
@@ -92,6 +97,7 @@ class _MsalGuardState extends State<MsalGuard> {
     this.androidRedirectUri,
     this.iosRedirectUri,
     this.apiBaseUrl,
+    this.httpInterceptors,
     this.privateSession,
     this.keychain,
   }) {
@@ -124,7 +130,8 @@ class _MsalGuardState extends State<MsalGuard> {
               create: (_) => _authenticationService),
           Provider<AuthenticatedHttp>(
               create: (_) => AuthenticatedHttp(interceptors: [
-                    AuthenticationInterceptor(_authenticationService)
+                    AuthenticationInterceptor(_authenticationService),
+                    ...?httpInterceptors
                   ], baseUrl: apiBaseUrl))
         ],
         builder: (context, wiget) => StreamBuilder(
