@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/loading.dart';
 import 'package:example/login.dart';
 import 'package:example/private.dart';
@@ -53,8 +55,17 @@ class _MyHomePageState extends State<MyHomePage> {
       authority: _authority,
       redirectUri: _androidRedirectUri,
       iosRedirectUri: _iosRedirectUri,
+      httpInterceptors: [TestInterceptor()],
       scopes: _scopes,
       apiBaseUrl: _apiUrl,
     );
+  }
+}
+
+class TestInterceptor extends Interceptor {
+  @override
+  Future<BaseRequest> onRequest({required BaseRequest request}) async {
+    log("intercepted request");
+    return request;
   }
 }
