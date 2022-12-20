@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:msal_guard/msal_guard.dart';
 import 'package:provider/provider.dart';
 
+import 'authentication_interceptor.dart';
+import 'client/authenticated_http.dart';
+
 /// Create a new MsalGuard widget
 /// @param publicWidget The widget to display when user is not authenticated
 /// @param guardedWidget The widget to display when user is authenticated
@@ -21,14 +24,15 @@ class MsalGuard extends StatefulWidget {
       required this.loadingWidget,
       required this.clientId,
       required this.scopes,
-      this.authority,
+      required this.authority,
       this.additionalAuthorities,
       this.redirectUri,
       this.androidRedirectUri,
       this.iosRedirectUri,
       this.keychain,
       this.privateSession,
-      this.apiBaseUrl})
+      this.apiBaseUrl,
+      this.httpInterceptors})
       : super(key: key);
 
   final Widget publicWidget;
@@ -36,16 +40,19 @@ class MsalGuard extends StatefulWidget {
   final Widget loadingWidget;
 
   final String clientId;
-  final String? authority;
+  final String authority;
   final List<String>? additionalAuthorities;
   final String? redirectUri;
   final List<String> scopes;
 
   final String? apiBaseUrl;
 
+  final List<Interceptor>? httpInterceptors;
+
   /// this is only used in ios it won't affect android configuration
   /// for more info go to https://docs.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-macos-ios#silent-sso-between-apps
   final String? keychain;
+
   /// privateSession is set to true to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session. Whether the request is honored depends on the user’s default web browser. Safari always honors the request.
   /// The value of this property is false by default.
   final bool? privateSession;
@@ -55,7 +62,7 @@ class MsalGuard extends StatefulWidget {
   final String? iosRedirectUri;
 
   @override
-  _MsalGuardState createState() => _MsalGuardState(
+  State<MsalGuard> createState() => _MsalGuardState(
       clientId: clientId,
       scopes: scopes,
       authority: authority,
@@ -64,16 +71,18 @@ class MsalGuard extends StatefulWidget {
       iosRedirectUri: iosRedirectUri,
       keychain: keychain,
       privateSession: privateSession,
-      apiBaseUrl: apiBaseUrl);
+      apiBaseUrl: apiBaseUrl,
+      httpInterceptors: httpInterceptors);
 }
 
 class _MsalGuardState extends State<MsalGuard> {
   final String clientId;
   final List<String> scopes;
-  final String? authority;
+  final String authority;
   final String? redirectUri;
   final String? androidRedirectUri;
   final String? iosRedirectUri;
+  final List<Interceptor>? httpInterceptors;
   final String? apiBaseUrl;
   final String? keychain;
   final bool? privateSession;
@@ -83,23 +92,24 @@ class _MsalGuardState extends State<MsalGuard> {
   _MsalGuardState({
     required this.clientId,
     required this.scopes,
-    this.authority,
+    required this.authority,
     this.redirectUri,
     this.androidRedirectUri,
     this.iosRedirectUri,
     this.apiBaseUrl,
+    this.httpInterceptors,
     this.privateSession,
     this.keychain,
   }) {
     _authenticationService = AuthenticationService(
-        clientId: this.clientId,
-        defaultScopes: scopes,
-        defaultAuthority: this.authority,
-        redirectUri: this.redirectUri,
-        keychain: this.keychain,
+      config: MSALPublicClientApplicationConfig(
+        clientId: clientId,
+        androidRedirectUri: this.androidRedirectUri,
         iosRedirectUri: this.iosRedirectUri,
-        privateSession: privateSession,
-        androidRedirectUri: this.androidRedirectUri);
+        authority: Uri.parse(authority),
+      ),
+      defaultScopes: scopes,
+    );
   }
 
   @override
@@ -119,8 +129,10 @@ class _MsalGuardState extends State<MsalGuard> {
           Provider<AuthenticationService>(
               create: (_) => _authenticationService),
           Provider<AuthenticatedHttp>(
-              create: (_) => AuthenticatedHttp(_authenticationService,
-                  baseUrl: apiBaseUrl))
+              create: (_) => AuthenticatedHttp(interceptors: [
+                    AuthenticationInterceptor(_authenticationService),
+                    ...?httpInterceptors
+                  ], baseUrl: apiBaseUrl))
         ],
         builder: (context, wiget) => StreamBuilder(
               // initialData: widget.loadingWidget,

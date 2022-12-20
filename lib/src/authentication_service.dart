@@ -1,36 +1,41 @@
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:msal_flutter/msal_flutter.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import './authentication_status.dart';
+import '../msal_guard.dart';
+
+const String _kDefaultUser = 'defaultUser';
 
 class AuthenticationService {
-  /// Create a new authentication ser
-  AuthenticationService(
-      {required this.clientId,
-      required this.defaultScopes,
-      this.defaultAuthority,
-      this.redirectUri,
-      this.keychain,
-      this.androidRedirectUri,
-      this.iosRedirectUri,
-      this.privateSession});
+  late SharedPreferences _prefs;
 
-  final String clientId;
-  final String? defaultAuthority;
-  final String? redirectUri;
-  final String? androidRedirectUri;
-  final String? iosRedirectUri;
-  final String? keychain;
-  /// privateSession is set to true to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session. Whether the request is honored depends on the user’s default web browser. Safari always honors the request.
-  /// The value of this property is false by default.
-  final bool? privateSession;
+  late MSALPublicClientApplication _pca;
 
-  PublicClientApplication? pca;
-  String? _currentAuthority;
-  List<String> defaultScopes;
+  final MSALPublicClientApplicationConfig config;
+  final MSALWebviewParameters? webParams;
+  final MSALInteractiveTokenParameters _defaultInteractiveParams;
+  final MSALSilentTokenParameters _defaultSilentParams;
+  final MSALSignoutParameters _defaultSignoutParameters;
 
+  AuthenticationService({
+    required this.config,
+    required List<String> defaultScopes,
+    this.webParams,
+  })  : this._defaultInteractiveParams =
+            MSALInteractiveTokenParameters(scopes: defaultScopes),
+        this._defaultSilentParams =
+            MSALSilentTokenParameters(scopes: defaultScopes),
+        this._defaultSignoutParameters = MSALSignoutParameters();
+
+  late MSALAccount? _currentAccount;
+  MSALAccount? get currentAccount => _currentAccount;
+
+  BehaviorSubject<List<MSALAccount>?> _accountSubject =
+      BehaviorSubject<List<MSALAccount>?>.seeded(null);
+
+  Stream<List<MSALAccount>?> get accounts => _accountSubject.stream;
   // behavior subject
   final BehaviorSubject<AuthenticationStatus> _authenticationStatusSubject =
       BehaviorSubject<AuthenticationStatus>.seeded(AuthenticationStatus.none);
@@ -41,104 +46,127 @@ class AuthenticationService {
 
   /// Updates the authentication status
   void _updateStatus(AuthenticationStatus status) {
-    var last = this._authenticationStatusSubject.value;
+    var last = _authenticationStatusSubject.value;
     if (status == last) {
       return;
     }
     _authenticationStatusSubject.add(status);
   }
 
-  /// Initialisation function. Only to be called once on startup or first usage of auth service.
-  /// @param authorityOverride A override for the authority to use while initiating.
-  /// This should be used when user previously logged in using a different authority to null such
-  /// as when signing in with different userflows, such as seperate flows for different social providers
-  Future init() async {
-    await _initPca(defaultAuthority);
-    //store the default scopes for the app
+  Future<void> init() async {
     try {
-      await acquireTokenSilently();
-      _authenticationStatusSubject.add(AuthenticationStatus.authenticated);
-    } on Exception catch(e) {
-      log(e.toString());
-      print(
-          "Default init signin failed. USer not signed in to default authority.");
-      _authenticationStatusSubject.add(AuthenticationStatus.unauthenticated);
-    }
-  }
+      _prefs = await SharedPreferences.getInstance();
 
-  //initiate an authority
-  Future _initPca(String? authority) async {
-    _currentAuthority = authority;
-    pca = await PublicClientApplication.createPublicClientApplication(
-        this.clientId,
-        authority: authority,
-        redirectUri: this.redirectUri,
-        androidRedirectUri: this.androidRedirectUri,
-        iosRedirectUri: this.iosRedirectUri,
-        keychain: this.keychain,
-        privateSession: privateSession);
-  }
-
-  Future<String> acquireToken({List<String>? scopes}) async {
-    try {
-      _pcaInitializedGuard();
-      var res = await pca!.acquireToken(scopes ?? defaultScopes);
-      _updateStatus(AuthenticationStatus.authenticated);
-      return res;
+      await _initPca();
+      if (Platform.isIOS) {
+        await _initWebParams();
+      }
+      await loadAccounts();
     } catch (e) {
-      _updateStatus(AuthenticationStatus.unauthenticated);
-      throw e;
+      rethrow;
     }
   }
 
-  Future<String> acquireTokenSilently({List<String>? scopes}) async {
+  Future<void> _initPca() async {
     try {
-      _pcaInitializedGuard();
-      var res = await pca!.acquireTokenSilent(scopes ?? defaultScopes);
-      _updateStatus(AuthenticationStatus.authenticated);
-      return res;
+      _pca = await MSALPublicClientApplication.createPublicClientApplication(
+          config);
     } catch (e) {
-      _updateStatus(AuthenticationStatus.unauthenticated);
-      throw e;
+      rethrow;
     }
   }
 
-  Future login({String? authorityOverride}) async {
-    var authority = authorityOverride ?? defaultAuthority;
+  Future<void> _initWebParams() async {
+    try {
+      await _pca.initWebViewParams(webParams ?? MSALWebviewParameters());
+    } catch (e) {
+      rethrow;
+    }
+  }
 
+  Future<void> loadAccounts() async {
+    try {
+      final defaultUserId = _prefs.getString(_kDefaultUser);
+      final accounts = await _pca.loadAccounts();
+      if (accounts != null && accounts.isNotEmpty) {
+        _accountSubject.add(accounts);
+        _currentAccount = accounts.firstWhere(
+            (element) => element.identifier == defaultUserId,
+            orElse: () => accounts.first);
+        _updateStatus(AuthenticationStatus.authenticated);
+      } else {
+        _updateStatus(AuthenticationStatus.unauthenticated);
+        _accountSubject.add(null);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> setCurrentAccount(MSALAccount account) async {
+    _currentAccount = account;
+    await _prefs.setString(_kDefaultUser, account.identifier);
+  }
+
+  Future<MSALResult?> acquireToken(
+      {MSALInteractiveTokenParameters? params}) async {
+    try {
+      return await _pca.acquireToken(params ?? _defaultInteractiveParams);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<MSALResult?> acquireTokenSilently(
+      {MSALSilentTokenParameters? params}) async {
+    try {
+      return await _pca.acquireTokenSilent(
+          params ?? _defaultSilentParams, _currentAccount);
+    } catch (e) {
+      rethrow;
+    } finally {
+      await loadAccounts();
+    }
+  }
+
+  Future login({
+    Uri? authorityOverride,
+  }) async {
+    MSALInteractiveTokenParameters? params;
     try {
       // if override set, reinit with new authority
-      if (pca == null || _currentAuthority != authority) {
-        await _initPca(authority);
+      if (authorityOverride != null && authorityOverride != config.authority) {
+        params =
+            _defaultInteractiveParams.copyWith(authority: authorityOverride);
       }
 
       print("Logging in");
       _updateStatus(AuthenticationStatus.authenticating);
-      await pca!.acquireToken(defaultScopes);
+      await _pca.acquireToken(params ?? _defaultInteractiveParams);
       _updateStatus(AuthenticationStatus.authenticated);
+      await loadAccounts();
     } catch (e) {
       _updateStatus(AuthenticationStatus.failed);
       rethrow;
     }
   }
 
-  Future logout({bool browserLogout = false}) async {
+  Future logout(
+      {MSALSignoutParameters? signoutParameters, MSALAccount? account}) async {
     try {
-      await pca!.logout(browserLogout: browserLogout);
+      if (account != null || _currentAccount != null) {
+        await _pca.logout(signoutParameters ?? _defaultSignoutParameters,
+            account ?? _currentAccount!);
+        await loadAccounts();
+      } else {
+        throw Exception("No account to sign out");
+      }
     } finally {
       _updateStatus(AuthenticationStatus.unauthenticated);
     }
   }
 
   void dispose() {
-    _authenticationStatusSubject.close();
-  }
-
-  /// Ensures PublicClientApplication is initialized before it is used.
-  void _pcaInitializedGuard() {
-    if (pca == null) {
-      throw new MsalException(
-          "PublicClientApplication must be initialized before use.");
-    }
+    _accountSubject.close();
   }
 }

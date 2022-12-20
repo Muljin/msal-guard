@@ -6,10 +6,10 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:msal_flutter/msal_flutter.dart' as _i3;
+import 'package:msal_flutter/msal_flutter.dart' as _i2;
 import 'package:msal_guard/msal_guard.dart' as _i5;
 
-import 'guard_router_delegate_test.dart' as _i2;
+import 'guard_router_delegate_test.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -22,38 +22,39 @@ import 'guard_router_delegate_test.dart' as _i2;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeMSALPublicClientApplicationConfig_0 extends _i1.SmartFake
+    implements _i2.MSALPublicClientApplicationConfig {
+  _FakeMSALPublicClientApplicationConfig_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [AuthenticationServiceTest].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAuthenticationServiceTest extends _i1.Mock
-    implements _i2.AuthenticationServiceTest {
+    implements _i3.AuthenticationServiceTest {
   MockAuthenticationServiceTest() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  String get clientId => (super.noSuchMethod(
-        Invocation.getter(#clientId),
-        returnValue: '',
-      ) as String);
-  @override
-  set pca(_i3.PublicClientApplication? _pca) => super.noSuchMethod(
-        Invocation.setter(
-          #pca,
-          _pca,
+  _i2.MSALPublicClientApplicationConfig get config => (super.noSuchMethod(
+        Invocation.getter(#config),
+        returnValue: _FakeMSALPublicClientApplicationConfig_0(
+          this,
+          Invocation.getter(#config),
         ),
-        returnValueForMissingStub: null,
-      );
+      ) as _i2.MSALPublicClientApplicationConfig);
   @override
-  List<String> get defaultScopes => (super.noSuchMethod(
-        Invocation.getter(#defaultScopes),
-        returnValue: <String>[],
-      ) as List<String>);
-  @override
-  set defaultScopes(List<String>? _defaultScopes) => super.noSuchMethod(
+  set currentAccount(_i2.MSALAccount? _currentAccount) => super.noSuchMethod(
         Invocation.setter(
-          #defaultScopes,
-          _defaultScopes,
+          #currentAccount,
+          _currentAccount,
         ),
         returnValueForMissingStub: null,
       );
@@ -64,35 +65,47 @@ class MockAuthenticationServiceTest extends _i1.Mock
         returnValue: _i4.Stream<_i5.AuthenticationStatus>.empty(),
       ) as _i4.Stream<_i5.AuthenticationStatus>);
   @override
-  _i4.Future<dynamic> init() => (super.noSuchMethod(
+  _i4.Future<void> init() => (super.noSuchMethod(
         Invocation.method(
           #init,
           [],
         ),
-        returnValue: _i4.Future<dynamic>.value(),
-      ) as _i4.Future<dynamic>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i4.Future<String> acquireToken({List<String>? scopes}) =>
+  _i4.Future<void> loadAccounts() => (super.noSuchMethod(
+        Invocation.method(
+          #loadAccounts,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+  @override
+  _i4.Future<_i2.MSALResult?> acquireToken(
+          {_i2.MSALInteractiveTokenParameters? params}) =>
       (super.noSuchMethod(
         Invocation.method(
           #acquireToken,
           [],
-          {#scopes: scopes},
+          {#params: params},
         ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
+        returnValue: _i4.Future<_i2.MSALResult?>.value(),
+      ) as _i4.Future<_i2.MSALResult?>);
   @override
-  _i4.Future<String> acquireTokenSilently({List<String>? scopes}) =>
+  _i4.Future<_i2.MSALResult?> acquireTokenSilently(
+          {_i2.MSALSilentTokenParameters? params}) =>
       (super.noSuchMethod(
         Invocation.method(
           #acquireTokenSilently,
           [],
-          {#scopes: scopes},
+          {#params: params},
         ),
-        returnValue: _i4.Future<String>.value(''),
-      ) as _i4.Future<String>);
+        returnValue: _i4.Future<_i2.MSALResult?>.value(),
+      ) as _i4.Future<_i2.MSALResult?>);
   @override
-  _i4.Future<void> login({String? authorityOverride}) => (super.noSuchMethod(
+  _i4.Future<dynamic> login({Uri? authorityOverride}) => (super.noSuchMethod(
         Invocation.method(
           #login,
           [],
@@ -101,12 +114,18 @@ class MockAuthenticationServiceTest extends _i1.Mock
         returnValue: _i4.Future<dynamic>.value(),
       ) as _i4.Future<dynamic>);
   @override
-  _i4.Future<dynamic> logout({bool? browserLogout = false}) =>
+  _i4.Future<dynamic> logout({
+    _i2.MSALSignoutParameters? signoutParameters,
+    _i2.MSALAccount? account,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #logout,
           [],
-          {#browserLogout: browserLogout},
+          {
+            #signoutParameters: signoutParameters,
+            #account: account,
+          },
         ),
         returnValue: _i4.Future<dynamic>.value(),
       ) as _i4.Future<dynamic>);

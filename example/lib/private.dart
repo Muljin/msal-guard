@@ -20,35 +20,39 @@ class _PrivateWidgetState extends State<PrivateWidget> {
 
     var textStyle = TextStyle(color: Colors.black87, fontSize: 16.0);
 
-    return Container(
-      color: Colors.blue[50],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Private area",
-            style: textStyle,
+    return MaterialApp(builder: (context, child) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Private area",
+                style: textStyle,
+              ),
+              ElevatedButton(
+                  onPressed: _callEndpoint,
+                  child: Text('Make Authenticated call')),
+              ElevatedButton(onPressed: _logout, child: Text('Logout')),
+              Text(
+                output,
+                style: textStyle,
+              )
+            ],
           ),
-          ElevatedButton(
-              onPressed: _callEndpoint, child: Text('Make Authenticated call')),
-          ElevatedButton(onPressed: _logout, child: Text('Logout')),
-          Text(
-            output,
-            style: textStyle,
-          )
-        ],
-      ),
-    );
+        ),
+      );
+    });
   }
 
   _callEndpoint() async {
-    try{
-    var res = await _authHttp!.get("testauth");
-    setState(() {
-      output = res.body;
-    });
-    } on MsalException catch(e){
+    try {
+      var res = await _authHttp!.get("testauth");
+      setState(() {
+        output = res.body;
+      });
+    } on MsalException catch (e) {
       print(e);
       print(e.errorMessage);
     }

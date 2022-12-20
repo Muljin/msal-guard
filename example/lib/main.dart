@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/loading.dart';
 import 'package:example/login.dart';
 import 'package:example/private.dart';
@@ -33,10 +35,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   static const String _authority =
       "https://msalfluttertest.b2clogin.com/tfp/3fab2993-1fec-4a8c-a6d8-2bfea01e64ea/B2C_1_phonesisu";
-  static const String _redirectUri =
-      "msalc3aab3bb-dd2e-4bb5-8768-38f032570a71://auth";
-  static const String _iosRedirectUrl = "msauth.com.muljin.msalguardexample://auth";
-  static const String _clientId = "c3aab3bb-dd2e-4bb5-8768-38f032570a71";
+  static const String _iosRedirectUri = "msauth.com.muljin.msalguardexample://auth";
+  static const String _androidRedirectUri =
+      "msauth://com.example.example/TvkGQnk1ERb%2Bl9pB4OeyeWrYmqo%3D";
+  static const String _clientId = "fc6136e7-43d1-489c-b221-630e9e4402d3";
   static const List<String> _scopes = [
     "https://msalfluttertest.onmicrosoft.com/msaltesterapi/All"
   ];
@@ -51,10 +53,19 @@ class _MyHomePageState extends State<MyHomePage> {
       loadingWidget: LoadingWidget(),
       clientId: _clientId,
       authority: _authority,
-      redirectUri: _redirectUri,
-      iosRedirectUri: _iosRedirectUrl,
+      redirectUri: _androidRedirectUri,
+      iosRedirectUri: _iosRedirectUri,
+      httpInterceptors: [TestInterceptor()],
       scopes: _scopes,
       apiBaseUrl: _apiUrl,
     );
+  }
+}
+
+class TestInterceptor extends Interceptor {
+  @override
+  Future<BaseRequest> onRequest({required BaseRequest request}) async {
+    log("intercepted request");
+    return request;
   }
 }
