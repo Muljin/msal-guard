@@ -106,6 +106,8 @@ class _MsalGuardState extends State<MsalGuard> {
         clientId: clientId,
         androidRedirectUri: this.androidRedirectUri,
         iosRedirectUri: this.iosRedirectUri,
+        androidConfig: MSALAndroidConfig(
+            authorities: [Authority(authorityUrl: Uri.parse(authority))]),
         authority: Uri.parse(authority),
       ),
       defaultScopes: scopes,
